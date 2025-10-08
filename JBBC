@@ -1,0 +1,141 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class StudentCRUD {
+
+    // ✅ Database Connection Method
+    public static Connection getConnection() throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/studentdb", "root", "password");
+        // change "password" to your MySQL password
+    }
+
+    // ✅ Create Table (only once)
+    public static void createTable() throws Exception {
+        Connection con = getConnection();
+        Statement st = con.createStatement();
+        st.executeUpdate("CREATE TABLE IF NOT EXISTS students ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "name VARCHAR(50), "
+                + "course VARCHAR(50), "
+                + "marks INT)");
+        System.out.println("Table ready!");
+        con.close();
+    }
+
+    // ✅ Insert (Create)
+    public static void insertStudent(String name, String course, int marks) throws Exception {
+        Connection con = getConnection();
+        String sql = "INSERT INTO students(name, course, marks) VALUES (?, ?, ?)";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setString(2, course);
+        ps.setInt(3, marks);
+        ps.executeUpdate();
+        System.out.println("✅ Student inserted!");
+        con.close();
+    }
+
+    // ✅ Read (Display All)
+    public static void showStudents() throws Exception {
+        Connection con = getConnection();
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM students");
+        System.out.println("\n--- Student Records ---");
+        while (rs.next()) {
+            System.out.println(rs.getInt("id") + " | " +
+                               rs.getString("name") + " | " +
+                               rs.getString("course") + " | " +
+                               rs.getInt("marks"));
+        }
+        con.close();
+    }
+
+    // ✅ Update
+    public static void updateStudent(int id, int marks) throws Exception {
+        Connection con = getConnection();
+        String sql = "UPDATE students SET marks=? WHERE id=?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, marks);
+        ps.setInt(2, id);
+        int rows = ps.executeUpdate();
+        if (rows > 0)
+            System.out.println("✅ Marks updated!");
+        else
+            System.out.println("⚠️ No record found!");
+        con.close();
+    }
+
+    // ✅ Delete
+    public static void deleteStudent(int id) throws Exception {
+        Connection con = getConnection();
+        String sql = "DELETE FROM students WHERE id=?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, id);
+        int rows = ps.executeUpdate();
+        if (rows > 0)
+            System.out.println("✅ Record deleted!");
+        else
+            System.out.println("⚠️ No record found!");
+        con.close();
+    }
+
+    // ✅ Main Menu (Controller)
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        try {
+            createTable();
+            while (true) {
+                System.out.println("\n====== STUDENT DATABASE MENU ======");
+                System.out.println("1. Insert Student");
+                System.out.println("2. Show Students");
+                System.out.println("3. Update Marks");
+                System.out.println("4. Delete Student");
+                System.out.println("5. Exit");
+                System.out.print("Enter choice: ");
+                int ch = sc.nextInt();
+
+                switch (ch) {
+                    case 1:
+                        System.out.print("Enter name: ");
+                        String name = sc.next();
+                        System.out.print("Enter course: ");
+                        String course = sc.next();
+                        System.out.print("Enter marks: ");
+                        int marks = sc.nextInt();
+                        insertStudent(name, course, marks);
+                        break;
+
+                    case 2:
+                        showStudents();
+                        break;
+
+                    case 3:
+                        System.out.print("Enter ID: ");
+                        int id = sc.nextInt();
+                        System.out.print("Enter new marks: ");
+                        int newMarks = sc.nextInt();
+                        updateStudent(id, newMarks);
+                        break;
+
+                    case 4:
+                        System.out.print("Enter ID to delete: ");
+                        int delId = sc.nextInt();
+                        deleteStudent(delId);
+                        break;
+
+                    case 5:
+                        System.out.println("Goodbye!");
+                        System.exit(0);
+
+                    default:
+                        System.out.println("Invalid choice!");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sc.close();
+    }
+}
