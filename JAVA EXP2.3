@@ -1,9 +1,8 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class StudentCRUD {
+public class Main {
 
-    // ✅ Database Connection Method
     public static Connection getConnection() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(
@@ -11,7 +10,6 @@ public class StudentCRUD {
         // change "password" to your MySQL password
     }
 
-    // ✅ Create Table (only once)
     public static void createTable() throws Exception {
         Connection con = getConnection();
         Statement st = con.createStatement();
@@ -24,7 +22,7 @@ public class StudentCRUD {
         con.close();
     }
 
-    // ✅ Insert (Create)
+
     public static void insertStudent(String name, String course, int marks) throws Exception {
         Connection con = getConnection();
         String sql = "INSERT INTO students(name, course, marks) VALUES (?, ?, ?)";
@@ -37,7 +35,7 @@ public class StudentCRUD {
         con.close();
     }
 
-    // ✅ Read (Display All)
+    
     public static void showStudents() throws Exception {
         Connection con = getConnection();
         Statement st = con.createStatement();
@@ -52,7 +50,6 @@ public class StudentCRUD {
         con.close();
     }
 
-    // ✅ Update
     public static void updateStudent(int id, int marks) throws Exception {
         Connection con = getConnection();
         String sql = "UPDATE students SET marks=? WHERE id=?";
@@ -67,7 +64,7 @@ public class StudentCRUD {
         con.close();
     }
 
-    // ✅ Delete
+    
     public static void deleteStudent(int id) throws Exception {
         Connection con = getConnection();
         String sql = "DELETE FROM students WHERE id=?";
@@ -81,7 +78,7 @@ public class StudentCRUD {
         con.close();
     }
 
-    // ✅ Main Menu (Controller)
+    
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         try {
